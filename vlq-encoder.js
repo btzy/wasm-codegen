@@ -1,5 +1,10 @@
+var encodeUIntString=function(str){
+    return new TextEncoder().encode(str);
+};
+
 var VLQEncoder={};
-VLQEncoder.encode=function(value){
+
+VLQEncoder.encodeUInt=function(value){
     var output=new ResizableUint8Array();
     while(true){
         var next_val=value%128;
@@ -13,4 +18,9 @@ VLQEncoder.encode=function(value){
         }
     }
     return output.toUint8Array();
+};
+
+VLQEncoder.encodeInt=function(value){
+    // TODO.
+    throw "Not implemented yet :(";
 };

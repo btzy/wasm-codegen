@@ -9,11 +9,11 @@ var Wasm32TypeWriter=function(param_types,result_types){
 Wasm32TypeWriter.prototype.toUint8Array=function(){
     var output=new ResizableUint8Array();
     output.push(0x60); // func
-    output.append(VLQEncoder.encode(this._param_types.length));
+    output.append(VLQEncoder.encodeUInt(this._param_types.length));
     for(var i=0;i<this._param_types.length;++i){
         output.push(this._param_types[i]);
     }
-    output.append(VLQEncoder.encode(this._result_types.length));
+    output.append(VLQEncoder.encodeUInt(this._result_types.length));
     for(var i=0;i<this._result_types.length;++i){
         output.push(this._result_types[i]);
     }
