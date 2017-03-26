@@ -20,20 +20,16 @@ Wasm32ModuleWriter.prototype.addLogicalFunction=function(logical_function){
     var typeIndex=this._types.length;
     var funcIndex=this._functions.length;
     this._types.push(logical_function._type);
-    var function_def=new Uint8Array(1);
-    function_def[0]=typeIndex;
-    this._functions.push(function_def);
+    this._functions.push(VLQEncoder.encode(typeIndex));
     this._codes.push(logical_function._code);
     if(logical_function._exportName){
         var encoded_name=encodeString(logical_function._exportName);
-        var export_def=new Uint8Array(encoded_name.length+3);
-        export_def[0]=encoded_name.length;
-        for(var i=0;i<encoded_name.length;++i){
-            export_def[i+1]=encoded_name[i];
-        }
-        export_def[encoded_name.length+1]=0;
-        export_def[encoded_name.length+2]=funcIndex;
-        this._exports.push(export_def);
+        var export_def=new ResizableUint8Array();
+        export_def.append(VLQEncoder.encode(encoded_name.length));
+        export_def.append(encoded_name);
+        export_def.push(0);
+        export_def.append(VLQEncoder.encode(funcIndex));
+        this._exports.push(export_def.toUint8Array());
     }
 };
 Wasm32ModuleWriter.prototype.generateModule=function(){
@@ -55,48 +51,44 @@ Wasm32ModuleWriter.prototype.generateModule=function(){
     if(this._types.length>0){
         output.push(Wasm32ModuleWriter.sectionCode.TYPE);
         var sizeloc=output.size();
-        output.push(0); // dummy for size
-        output.push(this._types.length);
+        output.append(VLQEncoder.encode(this._types.length));
         for(var i=0;i<this._types.length;++i){
             output.append(this._types[i]);
         }
-        output.set(sizeloc,output.size()-sizeloc-1);
+        output.insert_arr(sizeloc,VLQEncoder.encode(output.size()-sizeloc));
     }
     
     // FUNCTION
     if(this._functions.length>0){
         output.push(Wasm32ModuleWriter.sectionCode.FUNCTION);
         var sizeloc=output.size();
-        output.push(0); // dummy for size
-        output.push(this._functions.length);
+        output.append(VLQEncoder.encode(this._functions.length));
         for(var i=0;i<this._functions.length;++i){
             output.append(this._functions[i]);
         }
-        output.set(sizeloc,output.size()-sizeloc-1);
+        output.insert_arr(sizeloc,VLQEncoder.encode(output.size()-sizeloc));
     }
     
     // EXPORT
     if(this._exports.length>0){
         output.push(Wasm32ModuleWriter.sectionCode.EXPORT);
         var sizeloc=output.size();
-        output.push(0); // dummy for size
-        output.push(this._exports.length);
+        output.append(VLQEncoder.encode(this._exports.length));
         for(var i=0;i<this._exports.length;++i){
             output.append(this._exports[i]);
         }
-        output.set(sizeloc,output.size()-sizeloc-1);
+        output.insert_arr(sizeloc,VLQEncoder.encode(output.size()-sizeloc));
     }
     
     // CODE
     if(this._codes.length>0){
         output.push(Wasm32ModuleWriter.sectionCode.CODE);
         var sizeloc=output.size();
-        output.push(0); // dummy for size
-        output.push(this._codes.length);
+        output.append(VLQEncoder.encode(this._codes.length));
         for(var i=0;i<this._codes.length;++i){
             output.append(this._codes[i]);
         }
-        output.set(sizeloc,output.size()-sizeloc-1);
+        output.insert_arr(sizeloc,VLQEncoder.encode(output.size()-sizeloc));
     }
     
     return output.toUint8Array();

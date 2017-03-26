@@ -36,6 +36,16 @@ ResizableUint8Array.prototype.append=function(value_uint8array){
 ResizableUint8Array.prototype.pop=function(){
     return this._data[--this._size];
 };
+ResizableUint8Array.prototype.insert_arr=function(index,value_uint8array){
+    this.reserve_extra(value_uint8array.length);
+    for(var i=this._size-1;i>=index;--i){
+        this._data[i+value_uint8array.length]=this._data[i];
+    }
+    for(var i=0;i<value_uint8array.length;++i){
+        this._data[index+i]=value_uint8array[i];
+    }
+    this._size+=value_uint8array.length;
+};
 ResizableUint8Array.prototype.toUint8Array=function(){
     var ret_arr=new Uint8Array(this._size);
     for(var i=0;i<this._size;++i){

@@ -98,14 +98,14 @@ Wasm32CodeWriter.prototype.i32_mul=function(){
 // export
 Wasm32CodeWriter.prototype.toUint8Array=function(){
     var output=new ResizableUint8Array();
-    output.push(0); // dummy size
-    output.push(this._localTypes.length);
+    //output.push(0); // dummy size
+    output.append(VLQEncoder.encode(this._localTypes.length));
     for(var i=0;i<this._localTypes.length;++i){
         output.push(1);
         output.push(this._localTypes[i]);
     }
     output.append(this._data.toUint8Array());
-    output.set(0,output.size()-1);
+    output.insert_arr(0,VLQEncoder.encode(output.size()));
     return output.toUint8Array();
 };
 
