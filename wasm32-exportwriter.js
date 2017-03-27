@@ -5,6 +5,11 @@ var Wasm32ExportWriter=function(field,kind,index){
 };
 
 
+Wasm32ExportWriter.prototype.setName=function(name){
+    this._functionname=name;
+};
+
+
 // export
 Wasm32ExportWriter.prototype.toUint8Array=function(){
     var output=new ResizableUint8Array();

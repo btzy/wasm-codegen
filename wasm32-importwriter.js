@@ -5,7 +5,15 @@ var Wasm32ImportWriter=function(module,field,kind){
 };
 
 
-Wasm32ImportWriter.writeType=function(type_uint8arr){
+Wasm32ImportWriter.prototype.setName=function(name){
+    this._functionname=name;
+}
+
+Wasm32ImportWriter.prototype.setType=function(type){
+    this._functiontype=type;
+};
+
+Wasm32ImportWriter.prototype.writeType=function(type_uint8arr){
     this._type=type_uint8arr;
 }
 

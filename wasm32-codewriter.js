@@ -1,6 +1,16 @@
 var Wasm32CodeWriter=function(local_types){
     this._localTypes=(local_types?local_types:[]); // [7e | 7f ...]
     this._data=new ResizableUint8Array();
+    this._functionlinks=[]; // {location:num,name:string}
+};
+
+
+Wasm32CodeWriter.prototype.setName=function(name){
+    this._functionname=name;
+};
+
+Wasm32CodeWriter.prototype.setType=function(type){
+    this._functiontype=type;
 };
 
 
@@ -118,9 +128,15 @@ Wasm32CodeWriter.prototype.return=function(){
     this.writeRawBytes(Wasm32CodeWriter.instruction.return);
 };
 
-Wasm32CodeWriter.prototype.call=function(function_index){
-    this.writeRawBytes(Wasm32CodeWriter.instruction.call);
-    this.writeUint8Array(VLQEncoder.encodeUInt(function_index));
+Wasm32CodeWriter.prototype.call=function(function_index_or_name){
+    if(typeof function_index_or_name === "number"){
+        this.writeRawBytes(Wasm32CodeWriter.instruction.call);
+        this.writeUint8Array(VLQEncoder.encodeUInt(function_index_or_name));
+    }
+    else{
+        this.writeRawBytes(Wasm32CodeWriter.instruction.call);
+        this._functionlinks.push({location:this._data.size(),name:function_index_or_name});
+    }
 };
 
 Wasm32CodeWriter.prototype.drop=function(){

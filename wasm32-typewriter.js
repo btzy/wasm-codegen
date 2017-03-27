@@ -8,7 +8,7 @@ var Wasm32TypeWriter=function(param_types,result_types){
 // export
 Wasm32TypeWriter.prototype.toUint8Array=function(){
     var output=new ResizableUint8Array();
-    output.push(0x60); // func
+    output.push(Wasm32VarType.func); // func
     output.append(VLQEncoder.encodeUInt(this._param_types.length));
     for(var i=0;i<this._param_types.length;++i){
         output.push(this._param_types[i]);
