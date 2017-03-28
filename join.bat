@@ -1,0 +1,1 @@
+call uglifyjs resizable-uint8array.js vlq-encoder.js wasm32-vartype.js wasm32-externalkind.js wasm32-typewriter.js wasm32-functionwriter.js wasm32-codewriter.js wasm32-exportwriter.js wasm32-importwriter.js wasm32-memorywriter.js wasm32-modulewriter.js --output wasm32codegen.max.js
