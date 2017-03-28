@@ -72,6 +72,9 @@ Wasm32ModuleWriter.prototype.addFunction=function(name,type,codeWriter){
 
 
 Wasm32ModuleWriter.prototype.generateModule=function(){
+    // TODO: fix imports
+    // func index should be imports then functions
+    // calling and exporting uses this combined func index
     var funcTypes=[];
     var funcTypesOffset=this._types.length;
     var funcTypesEqComp=function(type_data){
@@ -112,9 +115,24 @@ Wasm32ModuleWriter.prototype.generateModule=function(){
     
     // generate the FunctionWriters
     var that=this;
-    funcNames.forEach(function(name){
-        var functionWriter=new Wasm32FunctionWriter(funcTypes.findIndex(funcTypesEqComp(name.funcType))+funcTypesOffset);
-        that._functions.push(functionWriter);
+    this._codes.forEach(function(obj){
+        var type=obj._functiontype;
+        if(type){
+            var typeIndex=funcTypes.findIndex(funcTypesEqComp(obj._functiontype))+funcTypesOffset;
+            if(typeIndex===-1)throw "Weird assembler bug.";
+            var functionWriter=new Wasm32FunctionWriter(typeIndex);
+            that._functions.push(functionWriter);
+        }
+    });
+    
+    // resolve imports
+    this._imports.forEach(function(obj){
+        var type=obj._functiontype;
+        if(type){
+            var typeIndex=funcTypes.findIndex(funcTypesEqComp(type))+funcTypesOffset;
+            if(typeIndex===-1)throw "Weird assembler bug.";
+            obj._type=typeIndex;
+        }
     });
     
     // resolve functionlinks in code

@@ -13,10 +13,6 @@ Wasm32ImportWriter.prototype.setType=function(type){
     this._functiontype=type;
 };
 
-Wasm32ImportWriter.prototype.writeType=function(type_uint8arr){
-    this._type=type_uint8arr;
-}
-
 
 // export
 Wasm32ImportWriter.prototype.toUint8Array=function(){
@@ -28,6 +24,6 @@ Wasm32ImportWriter.prototype.toUint8Array=function(){
     output.push(VLQEncoder.encodeUInt(field_bytes.length));
     output.append(field_bytes);
     output.push(this._kind);
-    output.append(this._type);
+    output.append(VLQEncoder.encodeUInt(this._type));
     return output.toUint8Array();
 };
