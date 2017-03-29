@@ -5,6 +5,7 @@ var encodeUIntString=function(str){
 var VLQEncoder={};
 
 VLQEncoder.encodeUInt=function(value){
+    if(value<0||value!==Math.floor(value))debugger;
     var output=new ResizableUint8Array();
     while(true){
         var next_val=value%128;
@@ -21,6 +22,7 @@ VLQEncoder.encodeUInt=function(value){
 };
 
 VLQEncoder.encodeInt=function(value){
+    if(value!==Math.floor(value))debugger;
     var output=new ResizableUint8Array();
     var is_neg=(value<0);
     if(is_neg)value=-value-1;
