@@ -223,6 +223,7 @@ Wasm32CodeWriter.instruction = {
 
 Wasm32CodeWriter.prototype.writeRawBytes = function() {
     for (var i = 0; i < arguments.length; ++i) {
+        if (!(arguments[i] >= 0 && arguments[i] < 256)) debugger;
         this._data.push(arguments[i]);
     }
 };
@@ -295,15 +296,18 @@ Wasm32CodeWriter.prototype.select = function() {
 };
 
 Wasm32CodeWriter.prototype.get_local = function(localidx) {
-    this.writeRawBytes(Wasm32CodeWriter.instruction.get_local, localidx);
+    this.writeRawBytes(Wasm32CodeWriter.instruction.get_local);
+    this.writeUint8Array(VLQEncoder.encodeUInt(localidx));
 };
 
 Wasm32CodeWriter.prototype.set_local = function(localidx) {
-    this.writeRawBytes(Wasm32CodeWriter.instruction.set_local, localidx);
+    this.writeRawBytes(Wasm32CodeWriter.instruction.set_local);
+    this.writeUint8Array(VLQEncoder.encodeUInt(localidx));
 };
 
 Wasm32CodeWriter.prototype.tee_local = function(localidx) {
-    this.writeRawBytes(Wasm32CodeWriter.instruction.tee_local, localidx);
+    this.writeRawBytes(Wasm32CodeWriter.instruction.tee_local);
+    this.writeUint8Array(VLQEncoder.encodeUInt(localidx));
 };
 
 Wasm32CodeWriter.prototype.i32_load = function(offset, log_align) {
@@ -476,11 +480,13 @@ Wasm32CodeWriter.prototype.grow_memory = function() {
 };
 
 Wasm32CodeWriter.prototype.i32_const = function(val_i32) {
-    this.writeRawBytes(Wasm32CodeWriter.instruction.i32_const, VLQEncoder.encodeInt(val_i32));
+    this.writeRawBytes(Wasm32CodeWriter.instruction.i32_const);
+    this.writeUint8Array(VLQEncoder.encodeInt(val_i32));
 };
 
 Wasm32CodeWriter.prototype.i64_const = function(val_i64) {
-    this.writeRawBytes(Wasm32CodeWriter.instruction.i64_const, VLQEncoder.encodeInt(val_i64));
+    this.writeRawBytes(Wasm32CodeWriter.instruction.i64_const);
+    this.writeUint8Array(VLQEncoder.encodeInt(val_i64));
 };
 
 Wasm32CodeWriter.prototype.i32_eqz = function() {
